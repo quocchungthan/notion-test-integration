@@ -1,4 +1,6 @@
-import { INotionIntegrationService } from "@contracts/interfaces/INotionIntegrationClient.service";
-import { resolveInstanceInex } from "@domain/bootstrapping";
+import { lastModifiedBlockService } from "./src/app/LastModifiedBlock.service";
 
-console.log(resolveInstanceInex<INotionIntegrationService>());
+lastModifiedBlockService.getAll()
+    .then(() => {
+        lastModifiedBlockService.render();
+    });

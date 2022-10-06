@@ -1,3 +1,5 @@
+import { Notion } from "@contracts/models/Block.model";
+
 export interface INotionIntegrationService {
     connect(): Promise<void>;
     close(): Promise<void>;
