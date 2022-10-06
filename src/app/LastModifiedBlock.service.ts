@@ -6,6 +6,7 @@ import { notionIntegrationClientService } from "../../d/notionclient/NotionInteg
 
 class LastModifiedBlockService {
     private _data: Notion.Block[] = [];
+    private _maxLength = 50;
 
     constructor(private _notionService: INotionIntegrationService, private _logger: ILoggerService){ }
 
@@ -16,7 +17,16 @@ class LastModifiedBlockService {
                 this._notionService.close();
             })
             .then((result) => {
-                this._data = result.sort((x, y) => x.lastModified.getTime() - y.lastModified.getTime());
+                this._data = result
+                    .sort((x, y) => x.lastModified.getTime() - y.lastModified.getTime())
+                    .filter(x => x.brief.length > 0)
+                    .map(x => {
+                        if (x.brief.length > this._maxLength) {
+                            x.brief = x.brief.substring(0, this._maxLength - 3) + '...';
+                        }
+
+                        return x;
+                    });
             });
     }
 

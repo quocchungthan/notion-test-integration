@@ -6,6 +6,7 @@ import { Client } from "@notionhq/client";
 import { ParticalParagraphContent } from "./ParagraphResult.model";
 import { ILoggerService } from "@contracts/interfaces/ILogger.service";
 import { consoleLogger } from "../../d/core/ConsoleLogger.service";
+import { ListBlockChildrenResponse } from "@notionhq/client/build/src/api-endpoints";
 
 class NotionIntegrationClientService implements INotionIntegrationService {
 
@@ -50,13 +51,20 @@ class NotionIntegrationClientService implements INotionIntegrationService {
             return Promise.reject();
         }
 
-        var x = await this._notion.blocks.children.list({block_id: blockId});
+        var x: ListBlockChildrenResponse;
+        try {
+            x = await this._notion.blocks.children.list({block_id: blockId});
+            this._logger.info('Loaded children of block ' + blockId);
+
+        } catch(e) {
+            this._logger.info('Failed to load children of block ' + blockId + ' discarded ');
+            this._logger.info(e as object);
+            return Promise.resolve([]);
+        }
+
         var results: Notion.Block[] = [];
 
-        this._logger.info('Loaded children of block ' + blockId);
-        this._logger.info(x);
-
-        for (let y of  x?.results) {
+        for (let y of  x.results) {
             let brief = "";
 
             (y as ParticalParagraphContent).paragraph?.rich_text.forEach(x => {

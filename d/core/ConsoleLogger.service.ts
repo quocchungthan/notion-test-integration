@@ -16,7 +16,7 @@ class ConsoleLoggerService implements ILoggerService {
             msg = JSON.stringify(message);
         }
 
-        console.log(`${Date.now()} : ${msg}`);
+        console.log(`${new Date().toISOString()} : ${msg}`);
     }
     
 }
