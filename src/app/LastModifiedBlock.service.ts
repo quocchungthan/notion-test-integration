@@ -22,7 +22,7 @@ class LastModifiedBlockService {
 
     render(): void {
         this._logger.info("Done");
-        this._logger.table(this._data);
+        this._logger.table(this._data.map(x => ({brief: x.brief, lastModified: x.lastModified, parent: x.parentId})));
     }
 }
 
