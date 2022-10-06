@@ -3,7 +3,7 @@ import { INotionIntegrationService } from "@contracts/interfaces/INotionIntegrat
 import { Notion } from "@contracts/models/Block.model";
 import { configService } from "../config/Config.service";
 import { Client } from "@notionhq/client";
-import { ParticalParagraphContent } from "./ParagraphResult.model";
+import { ParagraphResult, ParticalParagraphContent } from "./ParagraphResult.model";
 import { ILoggerService } from "@contracts/interfaces/ILogger.service";
 import { consoleLogger } from "../../d/core/ConsoleLogger.service";
 import { ListBlockChildrenResponse } from "@notionhq/client/build/src/api-endpoints";
@@ -54,7 +54,7 @@ class NotionIntegrationClientService implements INotionIntegrationService {
         var x: ListBlockChildrenResponse;
         try {
             x = await this._notion.blocks.children.list({block_id: blockId});
-            this._logger.info('Loaded children of block ' + blockId);
+            // this._logger.info('Loaded children of block ' + blockId);
 
         } catch(e) {
             this._logger.info('Failed to load children of block ' + blockId + ' discarded ');
@@ -66,17 +66,26 @@ class NotionIntegrationClientService implements INotionIntegrationService {
 
         for (let y of  x.results) {
             let brief = "";
+            let block = y as ParagraphResult;
 
-            (y as ParticalParagraphContent).paragraph?.rich_text.forEach(x => {
+            var content = ParticalParagraphContent.prototype.getTexts.call(block);
+
+            content?.rich_text.forEach(x => {
                 brief += x.plain_text;
             });
 
-            results.push({
-                parentId: blockId,
-                id: y.id,
-                brief,
-                lastModified: new Date((y as ParticalParagraphContent).last_edited_time)
-            });
+            if (brief.trim().length == 0 
+                && content?.rich_text.length !== 0 
+                && !['table_row', 'column', 'column_list', 'image', 'table', 'child_database'].includes((block as ParticalParagraphContent).type)) {
+                this._logger.info('Empty block : ' + block.id)
+            } else {
+                results.push({
+                    parentId: blockId,
+                    id: block.id,
+                    brief,
+                    lastModified: new Date((y as ParticalParagraphContent).last_edited_time)
+                });
+            }
         }
 
         results = results.concat((await Promise.all(x.results.map(y => this.getChildBlocks(y.id)))).flat());
