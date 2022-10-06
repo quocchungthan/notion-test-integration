@@ -21,12 +21,16 @@ class LastModifiedBlockService {
                     .sort((x, y) => x.lastModified.getTime() - y.lastModified.getTime())
                     .filter(x => x.brief.length > 0)
                     .map(x => {
+                        x.brief = x.brief.trim();
+
                         if (x.brief.length > this._maxLength) {
                             x.brief = x.brief.substring(0, this._maxLength - 3) + '...';
                         }
+                        
 
                         return x;
-                    });
+                    })
+                    .filter(x => x.brief.length > 0);
             });
     }
 
