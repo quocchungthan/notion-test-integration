@@ -1,13 +1,18 @@
 import { IConfigService } from "@contracts/interfaces/IConfig.service";
+import { ILoggerService } from "@contracts/interfaces/ILogger.service";
 import { Config } from "@contracts/models/Config.model";
+import { consoleLogger } from "../../d/core/ConsoleLogger.service";
 const fs = require('fs');
 
 class ConfigService implements IConfigService {
     private _fileName = 'config.json';
     private _config?: Config;
 
+    constructor(private _logger: ILoggerService) {
+    }
+
     useConfig(fileName: string) {
-        console.log('Using config: ' + fileName);
+        this._logger.info('Using config: ' + fileName);
         this._fileName = fileName;
     }
 
@@ -40,4 +45,4 @@ class ConfigService implements IConfigService {
 
 }
 
-export const configService = new ConfigService() as IConfigService;
+export const configService = new ConfigService(consoleLogger) as IConfigService;
