@@ -77,9 +77,9 @@ class NotionIntegrationClientService implements INotionIntegrationService {
                 brief,
                 lastModified: new Date((y as ParticalParagraphContent).last_edited_time)
             });
-
-            results = results.concat(await this.getChildBlocks(y.id));
         }
+
+        results = results.concat((await Promise.all(x.results.map(y => this.getChildBlocks(y.id)))).flat());
 
         return results;
     }
