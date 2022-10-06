@@ -1,4 +1,3 @@
-import { IConfigService } from "@contracts/interfaces/IConfig.service";
 import { INotionIntegrationService } from "@contracts/interfaces/INotionIntegrationClient.service";
 import { Notion } from "@contracts/models/Block.model";
 import { configService } from "../../d/config/Config.service";
@@ -7,12 +6,11 @@ import { notionIntegrationClientService } from "../../d/notionclient/NotionInteg
 class LastModifiedBlockService {
     private _data: Notion.Block[] = [];
 
-    constructor(private _notionService: INotionIntegrationService, private _config: IConfigService){ }
+    constructor(private _notionService: INotionIntegrationService){ }
 
     getAll(): Promise<void> {
         return this._notionService.connect()
-            .then(() => this._config.getFirstPageId())
-            .then((id) => this._notionService.getBlocksByPageId(id))
+            .then(() => this._notionService.getBlocks())
             .finally(() => {
                 this._notionService.close();
             })
@@ -27,4 +25,4 @@ class LastModifiedBlockService {
 }
 
 
-export const lastModifiedBlockService = new LastModifiedBlockService(notionIntegrationClientService, configService);
+export const lastModifiedBlockService = new LastModifiedBlockService(notionIntegrationClientService);

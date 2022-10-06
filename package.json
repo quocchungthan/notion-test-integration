@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node_modules/.bin/ts-node index.ts"
+    "start": "node_modules/.bin/ts-node index.ts",
+    "start:prod": "node_modules/.bin/ts-node index.ts --config config.production.json"
   },
   "author": "",
   "license": "ISC",

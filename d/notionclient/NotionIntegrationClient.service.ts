@@ -3,7 +3,7 @@ import { INotionIntegrationService } from "@contracts/interfaces/INotionIntegrat
 import { Notion } from "@contracts/models/Block.model";
 import { configService } from "../config/Config.service";
 import { Client } from "@notionhq/client";
-import { ParagraphResult, ParticalParagraphContent } from "./ParagraphResult.model";
+import { ParticalParagraphContent } from "./ParagraphResult.model";
 
 class NotionIntegrationClientService implements INotionIntegrationService {
 
@@ -26,8 +26,11 @@ class NotionIntegrationClientService implements INotionIntegrationService {
         return Promise.resolve();
     }
 
-    getBlocks(): Promise<Notion.Block[]> {
-        return Promise.resolve([]);
+    async getBlocks(): Promise<Notion.Block[]> {
+        var pageIds = await this._config.getFirstPages();
+        var results = await Promise.all(pageIds.map(x => this.getBlocksByPageId(x)));
+
+        return results.flat();
     }
 
     getBlocksByPageId(pageId: string): Promise<Notion.Block[]> {
